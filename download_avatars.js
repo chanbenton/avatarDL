@@ -7,6 +7,17 @@ var GITHUB_USER = "chan.benton+test@gmail.com";
 var GITHUB_TOKEN = "df8eaf3035c414619ad2cf9a7f2608c0e09f6f3e";
 
 // Pulls a list of contributors for a given git from repoOwner/repoName
+
+function downloadImageByURL(url, filePath) {
+  request.get(url)
+    .on('error', function (err) {                              
+      throw err; 
+    })
+    .on('response', function (response) {
+    })
+    .pipe(fs.createWriteStream(filePath));
+    // concat avatar/login.jpg
+}
 function getRepoContributors(repoOwner, repoName, cb) {
   
   var options = {
@@ -23,34 +34,15 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
 }
 
-
-// function callback(error, response, body) {
-//   if (!error && response.statusCode == 200) {
-//     var info = JSON.parse(body);
-//     console.log(info.stargazers_count + " Stars");
-//     console.log(info.forks_count + " Forks");
-//   }
-// }
-
 getRepoContributors("jquery", "jquery", function(data){
-	for (each in data){
-		console.log(data[each].avatar_url);
+	for (each in data){		
+		var profile = data[each];
+		dir = "./avatars/";
+		var path = dir + profile.login + ".jpg";
+		if (!fs.existsSync(dir)){
+			fs.mkdir(dir);
+		}
+		console.log(profile.login);
+		downloadImageByURL(profile, path)
 	}
 });
-
-// function(addr) {
-//   // think of this part of the code as been executed
-//   // only AFTER the response is back
-//   console.log("Got Postal Code: ",addr);
-// };
-
-function downloadImageByURL(url, filePath) {
-  
-request.get(url)
-       .on('error', function (err) {                              
-         throw err; 
-       })
-       .on('response', function (response) {
-       })
-       .pipe(fs.createWriteStream(filePath));               
-}
