@@ -18,9 +18,9 @@ function getRepoContributors(repoOwner, repoName, cb) {
   request(options, function (error, response, body){
   	var data = JSON.parse(body);
   	console.log(data);
-  	// for (each in data){
-  	// 	console.log(data[each].avatar_url);
-  	// }
+  	for (each in data){
+  		console.log(data[each].avatar_url);
+  	}
   });
   
 }
