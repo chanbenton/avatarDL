@@ -17,12 +17,9 @@ function getRepoContributors(repoOwner, repoName, cb) {
   };
   request(options, function (error, response, body){
   	var data = JSON.parse(body);
-  	console.log(data);
-  	for (each in data){
-  		console.log(data[each].avatar_url);
-  	}
+  	cb(data);
   });
-  
+
 }
 
 
@@ -34,4 +31,14 @@ function getRepoContributors(repoOwner, repoName, cb) {
 //   }
 // }
 
-getRepoContributors("jquery", "jquery");
+getRepoContributors("jquery", "jquery", function(data){
+	for (each in data){
+		console.log(data[each].avatar_url);
+	}
+});
+
+// function(addr) {
+//   // think of this part of the code as been executed
+//   // only AFTER the response is back
+//   console.log("Got Postal Code: ",addr);
+// };
