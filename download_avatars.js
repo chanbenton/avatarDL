@@ -1,9 +1,17 @@
 var request = require('request');
 var fs = require('fs');
 
+var owner = process.argv[2];
+var repository = process.argv[3];
 
-var owner = process.argv.slice(2,3)[0];
-var repository = process.argv.slice(3,4)[0];
+function UserError(message){
+  this.message = message;
+  console.log(message);
+}
+
+if (!owner || !repository){
+  throw new UserError("Please provide input in the following format: node download_avatars.js <owner> <repository>");
+}
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -22,29 +30,31 @@ function getRepoContributors(repoOwner, repoName, cb) {
   
   // Custom HTTP Header in order to comply with GitHub's parameters to search.
   var options = {
-  	url: 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors',
-  	headers: {
-    	'User-Agent': "GitHub Avatar Downloader - Student Project"
-  	}
+    url: 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors',
+    headers: {
+      'User-Agent': "GitHub Avatar Downloader - Student Project"
+    }
   };
   
   // GETs array and parses by JSON for legibility
   request(options, function (error, response, body){
-  	var data = JSON.parse(body);
-  	cb(data);
+    var data = JSON.parse(body);
+    cb(data);
   });
 }
 
 // Starts function to search repoContributors, callback provided to create dir "./avatars/" and download image
 getRepoContributors(owner, repository, function(data){
-	for (each in data){		
-		var profile = data[each];
-		dir = "./avatars/";
-		var path = dir + profile.login + ".jpg";
-		if (!fs.existsSync(dir)){
-			fs.mkdir(dir);
-		}
-		downloadImageByURL(profile, path);
-	}
+  var dir = "./avatars/";
+  if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir); // Use synchronous version; ensures creation is complete before proceeding
+  }
+  
+  // Iterate through each contributor's profile, create the avatar filePath, and initiate the download of each profile's avatar.
+  for (each in data){   
+    var profile = data[each];
+    var path = dir + profile.login + '.jpg';
+    downloadImageByURL(profile.avatar_url, path);
+  }
 });
-console.log("Program complete!");
+console.log("Program complete! Please see pictures in /avatars folder.");
