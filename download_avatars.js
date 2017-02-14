@@ -1,5 +1,5 @@
 var request = require('request');
-var https = require('https');
+var fs = require('fs');
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -15,6 +15,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
     	'User-Agent': "GitHub Avatar Downloader - Student Project"
   	}
   };
+  
   request(options, function (error, response, body){
   	var data = JSON.parse(body);
   	cb(data);
@@ -42,3 +43,14 @@ getRepoContributors("jquery", "jquery", function(data){
 //   // only AFTER the response is back
 //   console.log("Got Postal Code: ",addr);
 // };
+
+function downloadImageByURL(url, filePath) {
+  
+request.get(url)
+       .on('error', function (err) {                              
+         throw err; 
+       })
+       .on('response', function (response) {
+       })
+       .pipe(fs.createWriteStream(filePath));               
+}
